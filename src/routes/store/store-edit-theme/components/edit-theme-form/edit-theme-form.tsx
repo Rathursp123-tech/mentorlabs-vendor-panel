@@ -109,8 +109,8 @@ export const EditThemeForm = ({ seller, theme, templates }: EditThemeFormProps) 
 
   return (
     <RouteDrawer.Form form={form}>
-      <KeyboundForm onSubmit={handleSubmit} className="flex h-full flex-col">
-        <RouteDrawer.Body className="space-y-6">
+      <KeyboundForm onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-hidden">
+        <RouteDrawer.Body className="flex max-w-full flex-1 flex-col gap-y-6 overflow-y-auto">
           {/* Live Storefront Mini Preview */}
           <div className="rounded-xl border border-ui-border-base bg-ui-bg-subtle p-4 shadow-sm">
             <div className="flex items-center justify-between mb-2">

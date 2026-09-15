@@ -5,16 +5,30 @@ import { ActionMenu } from "../../../../../components/common/action-menu"
 import { useTheme } from "../../../../../hooks/api/theme"
 
 export const ThemeSection = ({ seller }: { seller: StoreVendor }) => {
-  const { theme, templates } = useTheme()
+  const { theme, templates, seller: themeSeller } = useTheme()
 
   const overrides = theme?.theme_overrides || {}
   const activeTemplate = templates?.find((t) => t.id === theme?.template_id)
   const brandColor = overrides.brand_color || "#0f172a"
   const socialLinks = overrides.social_links || {}
 
-  const storefrontUrl = typeof window !== "undefined" && window.location.hostname
-    ? `${window.location.protocol}//${window.location.hostname}:3000/store/${seller.handle}`
-    : `http://localhost:3000/store/${seller.handle}`
+  const sellerHandle = seller?.handle || themeSeller?.handle || ""
+
+  const getStorefrontBaseUrl = () => {
+    if (typeof window !== "undefined") {
+      const hostname = window.location.hostname
+      // If deployed on Vercel or Render production
+      if (hostname.includes("vercel.app") || hostname.includes("onrender.com")) {
+        return "https://mentorlabs-storefront.vercel.app"
+      }
+      return `${window.location.protocol}//${hostname}:3000`
+    }
+    return "http://localhost:3000"
+  }
+
+  const storefrontUrl = sellerHandle
+    ? `${getStorefrontBaseUrl()}/store/${sellerHandle}`
+    : `${getStorefrontBaseUrl()}`
 
   return (
     <Container className="divide-y p-0">
