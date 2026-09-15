@@ -8,6 +8,7 @@ import { SingleColumnPageSkeleton } from "../../../components/common/skeleton/sk
 import { SingleColumnPage } from "../../../components/layout/pages/index.ts"
 import { useDashboardExtension } from "../../../extensions/index.ts"
 import { CompanySection } from "./components/company-section/company-section.tsx"
+import { ThemeSection } from "./components/theme-section/index.ts"
 import { useMe } from "../../../hooks/api/users.tsx"
 
 export const StoreDetail = () => {
@@ -22,7 +23,7 @@ export const StoreDetail = () => {
   const { getWidgets } = useDashboardExtension()
 
   if (isPending || sellerPending || !store || !seller) {
-    return <SingleColumnPageSkeleton sections={2} />
+    return <SingleColumnPageSkeleton sections={3} />
   }
 
   if (isError || sellerError) {
@@ -39,6 +40,7 @@ export const StoreDetail = () => {
       hasOutlet
     >
       <StoreGeneralSection seller={seller} />
+      <ThemeSection seller={seller} />
       <CompanySection seller={seller} />
     </SingleColumnPage>
   )

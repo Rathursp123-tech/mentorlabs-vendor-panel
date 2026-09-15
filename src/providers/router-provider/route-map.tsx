@@ -981,6 +981,10 @@ export const RouteMap: RouteObject[] = [
                 lazy: () => import('../../routes/store/store-edit-company')
               },
               {
+                path: 'edit-theme',
+                lazy: () => import('../../routes/store/store-edit-theme')
+              },
+              {
                 path: 'currencies',
                 lazy: () => import('../../routes/store/store-add-currencies')
               },
