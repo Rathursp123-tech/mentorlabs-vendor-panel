@@ -17,6 +17,8 @@ const EditThemeSchema = z.object({
   logo_url: z.string().optional(),
   hero_title: z.string().optional(),
   hero_subtitle: z.string().optional(),
+  min_order_threshold: z.coerce.number().min(0).optional(),
+  free_delivery_threshold: z.coerce.number().min(0).optional(),
   whatsapp: z.string().optional(),
   instagram: z.string().optional(),
 })
@@ -60,6 +62,8 @@ export const EditThemeForm = ({ seller, theme, templates }: EditThemeFormProps) 
       logo_url: overrides.logo_url || "",
       hero_title: overrides.hero_title || "",
       hero_subtitle: overrides.hero_subtitle || "",
+      min_order_threshold: overrides.min_order_threshold !== undefined ? Number(overrides.min_order_threshold) : 20,
+      free_delivery_threshold: overrides.free_delivery_threshold !== undefined ? Number(overrides.free_delivery_threshold) : 45,
       whatsapp:
         socialLinks.whatsapp ||
         overrides.booking_phone ||
@@ -94,6 +98,8 @@ export const EditThemeForm = ({ seller, theme, templates }: EditThemeFormProps) 
           logo_url: values.logo_url || undefined,
           hero_title: values.hero_title || undefined,
           hero_subtitle: values.hero_subtitle || undefined,
+          min_order_threshold: values.min_order_threshold !== undefined ? Number(values.min_order_threshold) : undefined,
+          free_delivery_threshold: values.free_delivery_threshold !== undefined ? Number(values.free_delivery_threshold) : undefined,
           social_links: {
             whatsapp: values.whatsapp || undefined,
             instagram: values.instagram || undefined,
@@ -420,6 +426,59 @@ export const EditThemeForm = ({ seller, theme, templates }: EditThemeFormProps) 
                     <Form.Label>Instagram Handle</Form.Label>
                     <Form.Control>
                       <Input {...field} placeholder="@yourbrand" />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Section 6: Order Guardrails & Delivery Incentives */}
+          <div className="space-y-4">
+            <div>
+              <Text size="small" weight="plus" className="text-ui-fg-base">
+                6. Order Guardrails & Delivery Incentives
+              </Text>
+              <Text size="xsmall" className="text-ui-fg-muted mt-0.5">
+                Configure minimum order checkout requirement and free delivery promotion target for your storefront. Set to 0 to disable.
+              </Text>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Form.Field
+                name="min_order_threshold"
+                control={form.control}
+                render={({ field }) => (
+                  <Form.Item>
+                    <Form.Label>Minimum Order Value (€)</Form.Label>
+                    <Form.Control>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="1"
+                        {...field}
+                        placeholder="20"
+                      />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
+              />
+
+              <Form.Field
+                name="free_delivery_threshold"
+                control={form.control}
+                render={({ field }) => (
+                  <Form.Item>
+                    <Form.Label>Free Delivery Target (€)</Form.Label>
+                    <Form.Control>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="1"
+                        {...field}
+                        placeholder="45"
+                      />
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>

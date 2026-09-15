@@ -15,6 +15,8 @@ export type SellerThemeOverrides = {
   announcement_text?: string
   hero_title?: string
   hero_subtitle?: string
+  min_order_threshold?: number
+  free_delivery_threshold?: number
   social_links?: {
     whatsapp?: string
     instagram?: string

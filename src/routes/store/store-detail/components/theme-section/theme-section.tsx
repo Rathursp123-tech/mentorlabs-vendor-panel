@@ -197,6 +197,30 @@ export const ThemeSection = ({ seller }: { seller: StoreVendor }) => {
           {socialLinks.instagram || "-"}
         </Text>
       </div>
+
+      {/* Free Delivery Target */}
+      <div className="text-ui-fg-subtle grid grid-cols-2 px-6 py-4">
+        <Text size="small" leading="compact" weight="plus">
+          Free Delivery Target
+        </Text>
+        <Text size="small" leading="compact" className="text-ui-fg-base">
+          {overrides.free_delivery_threshold != null && overrides.free_delivery_threshold > 0
+            ? `€${Number(overrides.free_delivery_threshold).toFixed(2)}`
+            : "Default (€45.00)"}
+        </Text>
+      </div>
+
+      {/* Minimum Order Value */}
+      <div className="text-ui-fg-subtle grid grid-cols-2 px-6 py-4">
+        <Text size="small" leading="compact" weight="plus">
+          Minimum Order Value
+        </Text>
+        <Text size="small" leading="compact" className="text-ui-fg-base">
+          {overrides.min_order_threshold != null && overrides.min_order_threshold > 0
+            ? `€${Number(overrides.min_order_threshold).toFixed(2)}`
+            : "Default (€20.00)"}
+        </Text>
+      </div>
     </Container>
   )
 }
