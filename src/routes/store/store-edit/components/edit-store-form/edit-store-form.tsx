@@ -117,7 +117,7 @@ export const EditStoreForm = ({ seller }: { seller: StoreVendor }) => {
         const fileReqs = []
         fileReqs.push(
           uploadFilesQuery(values.media).then((r: AdminFileResponse) =>
-            r.files.map((f: HttpTypes.AdminFile) => ({
+            (r?.files || []).map((f: HttpTypes.AdminFile) => ({
               ...f,
               isThumbnail: false,
             }))

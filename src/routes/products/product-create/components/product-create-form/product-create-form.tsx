@@ -120,7 +120,7 @@ export const ProductCreateForm = ({
         if (thumbnailReq?.length) {
           fileReqs.push(
             uploadFilesQuery(thumbnailReq).then((r: any) =>
-              r.files.map((f: any) => ({
+              (r?.files || []).map((f: any) => ({
                 ...f,
                 isThumbnail: true,
               }))
@@ -130,7 +130,7 @@ export const ProductCreateForm = ({
         if (otherMediaReq?.length) {
           fileReqs.push(
             uploadFilesQuery(otherMediaReq).then((r: any) =>
-              r.files.map((f: any) => ({
+              (r?.files || []).map((f: any) => ({
                 ...f,
                 isThumbnail: false,
               }))

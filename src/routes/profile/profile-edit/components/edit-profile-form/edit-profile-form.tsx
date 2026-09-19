@@ -78,7 +78,7 @@ export const EditProfileForm = ({ user }: EditProfileProps) => {
         const fileReqs = []
         fileReqs.push(
           uploadFilesQuery(values.media).then((r: any) =>
-            r.files.map((f: any) => ({
+            (r?.files || []).map((f: any) => ({
               ...f,
               isThumbnail: false,
             }))

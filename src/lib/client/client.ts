@@ -3,7 +3,10 @@ import Medusa from '@medusajs/js-sdk';
 export const backendUrl = __BACKEND_URL__ ?? '/';
 export const publishableApiKey = __PUBLISHABLE_API_KEY__ ?? '';
 
-const token = window.localStorage.getItem('medusa_auth_token') || '';
+export const getAuthToken = () => {
+  if (typeof window === 'undefined') return '';
+  return window.localStorage.getItem('medusa_auth_token') || '';
+};
 
 const decodeJwt = (token: string) => {
   try {
@@ -15,7 +18,7 @@ const decodeJwt = (token: string) => {
   }
 };
 
-const isTokenExpired = (token: string | null) => {
+export const isTokenExpired = (token: string | null) => {
   if (!token) return true;
 
   const payload = decodeJwt(token);
@@ -37,17 +40,24 @@ if (typeof window !== 'undefined') {
 export const importProductsQuery = async (file: File) => {
   const formData = new FormData();
   formData.append('file', file);
+  const currentToken = getAuthToken();
 
-  return await fetch(`${backendUrl}/vendor/products/import`, {
+  const response = await fetch(`${backendUrl}/vendor/products/import`, {
     method: 'POST',
     body: formData,
     headers: {
-      authorization: `Bearer ${token}`,
+      ...(currentToken ? { authorization: `Bearer ${currentToken}` } : {}),
       'x-publishable-api-key': publishableApiKey
-    }
-  })
-    .then(res => res.json())
-    .catch(() => null);
+    },
+    credentials: 'include'
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || 'Product import failed');
+  }
+
+  return response.json();
 };
 
 export const uploadFilesQuery = async (files: any[]) => {
@@ -57,16 +67,32 @@ export const uploadFilesQuery = async (files: any[]) => {
     formData.append('files', file);
   }
 
-  return await fetch(`${backendUrl}/vendor/uploads`, {
+  const currentToken = getAuthToken();
+
+  const response = await fetch(`${backendUrl}/vendor/uploads`, {
     method: 'POST',
     body: formData,
     headers: {
-      authorization: `Bearer ${token}`,
+      ...(currentToken ? { authorization: `Bearer ${currentToken}` } : {}),
       'x-publishable-api-key': publishableApiKey
+    },
+    credentials: 'include'
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      if (isTokenExpired(currentToken)) {
+        if (typeof window !== 'undefined') {
+          window.localStorage.removeItem('medusa_auth_token');
+          window.location.href = '/login?reason=Unauthorized';
+        }
+      }
     }
-  })
-    .then(res => res.json())
-    .catch(() => null);
+    throw new Error(errorData.message || `Upload failed with status ${response.status}`);
+  }
+
+  return response.json();
 };
 
 export const fetchQuery = async (
@@ -83,7 +109,7 @@ export const fetchQuery = async (
     headers?: { [key: string]: string };
   }
 ) => {
-  const bearer = (await window.localStorage.getItem('medusa_auth_token')) || '';
+  const bearer = getAuthToken();
   const params = Object.entries(query || {}).reduce((acc, [key, value]) => {
     if (value !== null && value !== undefined && value !== '') {
       if (Array.isArray(value)) {
@@ -108,21 +134,24 @@ export const fetchQuery = async (
   const response = await fetch(`${backendUrl}${url}${params && `?${params}`}`, {
     method: method,
     headers: {
-      authorization: `Bearer ${bearer}`,
+      ...(bearer ? { authorization: `Bearer ${bearer}` } : {}),
       'Content-Type': 'application/json',
       'x-publishable-api-key': publishableApiKey,
       ...headers
     },
-    body: body ? JSON.stringify(body) : null
+    body: body ? JSON.stringify(body) : null,
+    credentials: 'include'
   });
 
   if (!response.ok) {
-    const errorData = await response.json();
+    const errorData = await response.json().catch(() => ({}));
 
     if (response.status === 401) {
-      if (isTokenExpired(token)) {
-        localStorage.removeItem('medusa_auth_token');
-        window.location.href = '/login?reason=Unauthorized';
+      if (isTokenExpired(bearer)) {
+        if (typeof window !== 'undefined') {
+          window.localStorage.removeItem('medusa_auth_token');
+          window.location.href = '/login?reason=Unauthorized';
+        }
         return;
       }
 
