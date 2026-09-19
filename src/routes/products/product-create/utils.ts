@@ -27,7 +27,14 @@ export const normalizeProductFormValues = (
     shipping_profile_id: values.shipping_profile_id || undefined,
     categories: values.categories.map((id) => ({ id })),
     type_id: values.type_id || undefined,
-    handle: values.handle || undefined,
+    handle: values.handle
+      ? values.handle
+          .trim()
+          .toLowerCase()
+          .replace(/^\/+|\/+$/g, '')
+          .replace(/[^a-z0-9-_]/g, '-')
+          .replace(/-+/g, '-') || undefined
+      : undefined,
     origin_country: values.origin_country || undefined,
     material: values.material || undefined,
     mid_code: values.mid_code || undefined,

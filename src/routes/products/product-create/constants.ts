@@ -59,7 +59,20 @@ export const ProductCreateSchema = z
   .object({
     title: z.string().min(1),
     subtitle: z.string().optional(),
-    handle: z.string().optional(),
+    handle: z
+      .string()
+      .optional()
+      .transform((val) => {
+        if (!val) return undefined
+        return (
+          val
+            .trim()
+            .toLowerCase()
+            .replace(/^\/+|\/+$/g, '')
+            .replace(/[^a-z0-9-_]/g, '-')
+            .replace(/-+/g, '-') || undefined
+        )
+      }),
     description: z.string().optional(),
     discountable: z.boolean(),
     type_id: z.string().optional(),
